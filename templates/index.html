@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="p-5 mb-4 bg-light rounded-3 shadow">
+
+    <div class="container-fluid py-4">
+
+        <h1 class="display-5 fw-bold">
+            Welcome to Doctor Appointment System
+        </h1>
+
+        <p class="fs-5">
+            Manage doctors, patients and appointments easily 
+            with our hospital management system.
+        </p>
+
+        <a href="/patient-dashboard" 
+           class="btn btn-primary btn-lg">
+            Book Appointment
+        </a>
+
+        <a href="/doctors" 
+           class="btn btn-success btn-lg">
+            View Doctors
+        </a>
+
+    </div>
+
+</div>
+
+
+<div class="row text-center">
+
+
+<div class="col-md-4">
+
+<div class="card shadow p-4">
+
+<h3>👨‍⚕️ Doctors</h3>
+
+<p>
+Add, update and manage doctor information.
+</p>
+
+<a href="/doctors" class="btn btn-primary">
+Doctors
+</a>
+
+</div>
+
+</div>
+
+
+
+<div class="col-md-4">
+
+<div class="card shadow p-4">
+
+<h3>👥 Patients</h3>
+
+<p>
+Manage patient records securely.
+</p>
+
+<a href="/patients" class="btn btn-success">
+Patients
+</a>
+
+</div>
+
+</div>
+
+
+
+<div class="col-md-4">
+
+<div class="card shadow p-4">
+
+<h3>📅 Appointments</h3>
+
+<p>
+Book and manage appointments.
+</p>
+
+<a href="/appointments" class="btn btn-warning">
+Appointments
+</a>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+{% endblock %}

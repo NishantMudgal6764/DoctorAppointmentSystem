@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>Doctor Appointments</h2>
+
+
+<table class="table table-bordered">
+
+<tr>
+    <th>Patient</th>
+    <th>Doctor</th>
+    <th>Date</th>
+    <th>Time</th>
+    <th>Status</th>
+    <th>Action</th>
+</tr>
+
+
+{% for appointment in appointments %}
+
+<tr>
+
+<td>
+{{ appointment.patient.name }}
+</td>
+
+<td>
+{{ appointment.doctor.name }}
+</td>
+
+<td>
+{{ appointment.appointment_date }}
+</td>
+
+<td>
+{{ appointment.appointment_time }}
+</td>
+
+<td>
+{{ appointment.status }}
+</td>
+
+<td>
+
+<a href="/approve/{{ appointment.id }}"
+class="btn btn-success btn-sm">
+Approve
+</a>
+
+
+<a href="/reject/{{ appointment.id }}"
+class="btn btn-danger btn-sm">
+Reject
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+
+</table>
+
+{% endblock %}

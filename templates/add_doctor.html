@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">Add Doctor</h2>
+
+    <form method="POST">
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+                <label>Name</label>
+                <input type="text" name="name" class="form-control" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label>Department</label>
+                <input type="text" name="department" class="form-control" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label>Specialization</label>
+                <input type="text" name="specialization" class="form-control" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label>Qualification</label>
+                <input type="text" name="qualification" class="form-control" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label>Phone</label>
+                <input type="text" name="phone" class="form-control" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label>Email</label>
+                <input type="email" name="email" class="form-control" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label>Available Days</label>
+                <input type="text" name="available_days" class="form-control" placeholder="Mon-Fri" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label>Available Time</label>
+                <input type="text" name="available_time" class="form-control" placeholder="10:00 AM - 5:00 PM" required>
+            </div>
+
+        </div>
+
+        <button class="btn btn-primary">Save Doctor</button>
+
+    </form>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>Book Appointment</h2>
+
+<h4>Doctor Details</h4>
+
+<p>
+<b>Name:</b> {{ doctor.name }}
+</p>
+
+<p>
+<b>Specialization:</b> {{ doctor.specialization }}
+</p>
+
+
+<form method="POST">
+
+<label>Select Patient</label>
+
+<select name="patient_id" class="form-control mb-3">
+
+{% for patient in patients %}
+
+<option value="{{ patient.id }}">
+    {{ patient.name }}
+</option>
+
+{% endfor %}
+
+</select>
+
+
+<label>Appointment Date</label>
+
+<input type="date"
+name="appointment_date"
+class="form-control mb-3">
+
+
+<label>Appointment Time</label>
+
+<input type="time"
+name="appointment_time"
+class="form-control mb-3">
+
+
+<button class="btn btn-success">
+    Confirm Appointment
+</button>
+
+
+</form>
+
+{% endblock %}

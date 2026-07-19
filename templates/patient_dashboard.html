@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>Patient Dashboard</h2>
+<a href="/my-appointments/1" 
+class="btn btn-primary mb-3">
+
+My Appointments
+
+</a>
+
+<h4>Available Doctors</h4>
+
+<table class="table table-bordered">
+
+<tr>
+    <th>Name</th>
+    <th>Department</th>
+    <th>Specialization</th>
+    <th>Available Days</th>
+    <th>Action</th>
+</tr>
+
+{% for doctor in doctors %}
+
+<tr>
+    <td>{{ doctor.name }}</td>
+    <td>{{ doctor.department }}</td>
+    <td>{{ doctor.specialization }}</td>
+    <td>{{ doctor.available_days }}</td>
+
+    <td>
+        <a href="/book-appointment/{{ doctor.id }}" 
+           class="btn btn-success">
+            Book Appointment
+        </a>
+    </td>
+</tr>
+
+{% else %}
+
+<tr>
+    <td colspan="5">
+        No doctors available
+    </td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% endblock %}
