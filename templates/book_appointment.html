@@ -1,56 +1,53 @@
+
 {% extends 'base.html' %}
 
 {% block content %}
 
-<h2>Book Appointment</h2>
+<div class="container mt-4">
 
-<h4>Doctor Details</h4>
+    <div class="card shadow p-4">
 
-<p>
-<b>Name:</b> {{ doctor.name }}
-</p>
+        <h2 class="text-primary mb-3">Book Appointment</h2>
 
-<p>
-<b>Specialization:</b> {{ doctor.specialization }}
-</p>
+        <h5>Doctor Details</h5>
 
+        <p><b>Name:</b> {{ doctor.name }}</p>
+        <p><b>Specialization:</b> {{ doctor.specialization }}</p>
+        <p><b>Department:</b> {{ doctor.department }}</p>
 
-<form method="POST">
+        <hr>
 
-<label>Select Patient</label>
+        <form method="POST">
 
-<select name="patient_id" class="form-control mb-3">
+            <label class="form-label">Appointment Date</label>
+            <input
+                type="date"
+                name="appointment_date"
+                class="form-control mb-3"
+                required
+                min="{{ today }}"
+            >
 
-{% for patient in patients %}
+            <label class="form-label">Appointment Time</label>
+            <input
+                type="time"
+                name="appointment_time"
+                class="form-control mb-3"
+                required
+            >
 
-<option value="{{ patient.id }}">
-    {{ patient.name }}
-</option>
+            <button type="submit" class="btn btn-primary">
+                Confirm Appointment
+            </button>
 
-{% endfor %}
+            <a href="/" class="btn btn-secondary">
+                Cancel
+            </a>
 
-</select>
+        </form>
 
+    </div>
 
-<label>Appointment Date</label>
-
-<input type="date"
-name="appointment_date"
-class="form-control mb-3">
-
-
-<label>Appointment Time</label>
-
-<input type="time"
-name="appointment_time"
-class="form-control mb-3">
-
-
-<button class="btn btn-success">
-    Confirm Appointment
-</button>
-
-
-</form>
+</div>
 
 {% endblock %}

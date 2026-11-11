@@ -1,98 +1,368 @@
+
 {% extends 'base.html' %}
+
+{% block title %}Home | Doctor Appointment System{% endblock %}
 
 {% block content %}
 
-<div class="p-5 mb-4 bg-light rounded-3 shadow">
+<style>
+    .hero {
+        background: linear-gradient(120deg, #0d6efd, #084298);
+        color: white;
+        border-radius: 20px;
+        padding: 65px 45px;
+        margin-top: 20px;
+    }
 
-    <div class="container-fluid py-4">
+    .hero h1 {
+        font-size: 42px;
+        font-weight: 750;
+    }
 
-        <h1 class="display-5 fw-bold">
-            Welcome to Doctor Appointment System
-        </h1>
+    .hero p {
+        font-size: 18px;
+        opacity: 0.92;
+        max-width: 600px;
+    }
 
-        <p class="fs-5">
-            Manage doctors, patients and appointments easily 
-            with our hospital management system.
-        </p>
+    .hero-icon {
+        font-size: 110px;
+        text-align: center;
+    }
 
-        <a href="/patient-dashboard" 
-           class="btn btn-primary btn-lg">
-            Book Appointment
-        </a>
+    .section-title {
+        color: #12345b;
+        font-weight: 700;
+    }
 
-        <a href="/doctors" 
-           class="btn btn-success btn-lg">
-            View Doctors
-        </a>
+    .service-card {
+        border: none;
+        border-radius: 16px;
+        transition: 0.3s;
+        height: 100%;
+    }
+
+    .service-card:hover {
+        transform: translateY(-7px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    }
+
+    .service-icon {
+        font-size: 42px;
+        margin-bottom: 15px;
+    }
+
+    .info-section {
+        background: #f0f6ff;
+        border-radius: 18px;
+        padding: 35px;
+    }
+
+    .footer-section {
+        background: #12345b;
+        color: white;
+        padding: 25px;
+        margin-top: 60px;
+        border-radius: 12px 12px 0 0;
+    }
+</style>
+
+
+<!-- HERO SECTION -->
+
+<div class="hero shadow">
+
+    <div class="row align-items-center">
+
+        <div class="col-md-8">
+
+            <span class="badge bg-light text-primary mb-3 p-2">
+                YOUR HEALTH, OUR PRIORITY
+            </span>
+
+            <h1>
+                Quality Healthcare<br>
+                Made Simple.
+            </h1>
+
+            <p class="mt-3">
+                Find the right doctor, book appointments and manage
+                your healthcare journey easily with our Doctor
+                Appointment System.
+            </p>
+
+            {% if current_user %}
+
+                {% if current_user.role == "admin" %}
+                    <a href="{{ url_for('dashboard') }}"
+                       class="btn btn-light btn-lg mt-3">
+                        Go to Admin Dashboard
+                    </a>
+
+                {% elif current_user.role == "doctor" %}
+                    <a href="{{ url_for('doctor_dashboard') }}"
+                       class="btn btn-light btn-lg mt-3">
+                        Go to Doctor Dashboard
+                    </a>
+
+                {% elif current_user.role == "patient" %}
+                    <a href="{{ url_for('patient_dashboard') }}"
+                       class="btn btn-light btn-lg mt-3">
+                        Find Doctors
+                    </a>
+
+                    <a href="{{ url_for('my_appointments') }}"
+                       class="btn btn-outline-light btn-lg mt-3 ms-2">
+                        My Appointments
+                    </a>
+                {% endif %}
+
+            {% else %}
+
+                <a href="{{ url_for('register') }}"
+                   class="btn btn-light btn-lg mt-3">
+                    Get Started
+                </a>
+
+                <a href="{{ url_for('login') }}"
+                   class="btn btn-outline-light btn-lg mt-3 ms-2">
+                    Login
+                </a>
+
+            {% endif %}
+
+        </div>
+
+        <div class="col-md-4 hero-icon">
+            🏥
+        </div>
 
     </div>
 
 </div>
 
 
-<div class="row text-center">
+<!-- SERVICES SECTION -->
+
+<div class="container mt-5">
+
+    <div class="text-center mb-4">
+
+        <h2 class="section-title">Our Services</h2>
+
+        <p class="text-muted">
+            Everything you need for a convenient healthcare experience.
+        </p>
+
+    </div>
 
 
-<div class="col-md-4">
+    <div class="row g-4">
 
-<div class="card shadow p-4">
+        <div class="col-md-4">
 
-<h3>👨‍⚕️ Doctors</h3>
+            <div class="card service-card shadow-sm p-4 text-center">
 
-<p>
-Add, update and manage doctor information.
-</p>
+                <div class="service-icon">👨‍⚕️</div>
 
-<a href="/doctors" class="btn btn-primary">
-Doctors
-</a>
+                <h4>Find Doctors</h4>
+
+                <p class="text-muted">
+                    Explore available doctors and their specializations.
+                </p>
+
+                {% if current_user and current_user.role == "patient" %}
+
+                    <a href="{{ url_for('patient_dashboard') }}"
+                       class="btn btn-primary">
+                        Explore Doctors
+                    </a>
+
+                {% elif not current_user %}
+
+                    <a href="{{ url_for('login') }}"
+                       class="btn btn-primary">
+                        Login to Continue
+                    </a>
+
+                {% else %}
+
+                    <a href="{{ url_for('dashboard') if current_user.role == 'admin' else url_for('doctor_dashboard') }}"
+                       class="btn btn-primary">
+                        Open Portal
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+
+            <div class="card service-card shadow-sm p-4 text-center">
+
+                <div class="service-icon">📅</div>
+
+                <h4>Book Appointments</h4>
+
+                <p class="text-muted">
+                    Request appointments with doctors at your convenience.
+                </p>
+
+                {% if current_user and current_user.role == "patient" %}
+
+                    <a href="{{ url_for('patient_dashboard') }}"
+                       class="btn btn-primary">
+                        Book Now
+                    </a>
+
+                {% elif not current_user %}
+
+                    <a href="{{ url_for('register') }}"
+                       class="btn btn-primary">
+                        Register Now
+                    </a>
+
+                {% else %}
+
+                    <a href="{{ url_for('login') }}"
+                       class="btn btn-primary">
+                        Patient Login
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+
+            <div class="card service-card shadow-sm p-4 text-center">
+
+                <div class="service-icon">📋</div>
+
+                <h4>Appointment History</h4>
+
+                <p class="text-muted">
+                    Keep track of your appointment requests and their status.
+                </p>
+
+                {% if current_user and current_user.role == "patient" %}
+
+                    <a href="{{ url_for('my_appointments') }}"
+                       class="btn btn-primary">
+                        View History
+                    </a>
+
+                {% elif not current_user %}
+
+                    <a href="{{ url_for('login') }}"
+                       class="btn btn-primary">
+                        Login
+                    </a>
+
+                {% elif current_user.role == "admin" %}
+
+                    <a href="{{ url_for('appointments') }}"
+                       class="btn btn-primary">
+                        View Appointments
+                    </a>
+
+                {% else %}
+
+                    <a href="{{ url_for('doctor_dashboard') }}"
+                       class="btn btn-primary">
+                        View Appointments
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
+
+<!-- WHY CHOOSE US -->
+
+<div class="container mt-5">
+
+    <div class="info-section">
+
+        <div class="text-center">
+
+            <h2 class="section-title">Why Choose Us?</h2>
+
+            <p class="text-muted">
+                Making healthcare management easier and more accessible.
+            </p>
+
+        </div>
+
+        <div class="row text-center mt-4 g-4">
+
+            <div class="col-md-4">
+
+                <h3>⏰</h3>
+
+                <h5>Easy Booking</h5>
+
+                <p class="text-muted">
+                    Request appointments through a simple online process.
+                </p>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <h3>🔒</h3>
+
+                <h5>Secure Login</h5>
+
+                <p class="text-muted">
+                    Separate access for administrators, doctors and patients.
+                </p>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <h3>💙</h3>
+
+                <h5>Simple Experience</h5>
+
+                <p class="text-muted">
+                    Manage healthcare appointments from one place.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
 
+<!-- FOOTER -->
 
-<div class="col-md-4">
+<div class="footer-section text-center">
 
-<div class="card shadow p-4">
+    <h5>Doctor Appointment System</h5>
 
-<h3>👥 Patients</h3>
+    <p class="mb-0">
+        Making healthcare management simple and convenient.
+    </p>
 
-<p>
-Manage patient records securely.
-</p>
-
-<a href="/patients" class="btn btn-success">
-Patients
-</a>
+    <small>© 2026 Doctor Appointment System. All rights reserved.</small>
 
 </div>
-
-</div>
-
-
-
-<div class="col-md-4">
-
-<div class="card shadow p-4">
-
-<h3>📅 Appointments</h3>
-
-<p>
-Book and manage appointments.
-</p>
-
-<a href="/appointments" class="btn btn-warning">
-Appointments
-</a>
-
-</div>
-
-</div>
-
-
-</div>
-
 
 {% endblock %}
