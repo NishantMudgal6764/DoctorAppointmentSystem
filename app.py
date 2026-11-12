@@ -24,8 +24,54 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
 
-with app.app_context():
+
+# ---------------- DATABASE AND ADMIN SETUP ---------------- #
+
+def setup_database_and_admin():
     db.create_all()
+
+    admin_email = os.environ.get("ADMIN_EMAIL", "").strip().lower()
+    admin_password = os.environ.get("ADMIN_PASSWORD", "")
+    admin_name = os.environ.get("ADMIN_NAME", "Administrator")
+
+    if not admin_email or not admin_password:
+        print("Admin environment variables are not configured.")
+        return
+
+    if len(admin_password) < 8:
+        print("ADMIN_PASSWORD must contain at least 8 characters.")
+        return
+
+    existing_user = User.query.filter_by(email=admin_email).first()
+
+    if existing_user:
+        if existing_user.role != "admin":
+            print("Admin setup stopped: email belongs to a non-admin account.")
+            return
+
+        existing_user.name = admin_name
+        existing_user.set_password(admin_password)
+        db.session.commit()
+
+        print("Render Admin account password synchronized.")
+        return
+
+    admin = User(
+        name=admin_name,
+        email=admin_email,
+        role="admin"
+    )
+
+    admin.set_password(admin_password)
+
+    db.session.add(admin)
+    db.session.commit()
+
+    print("Render Admin account created successfully!")
+
+
+with app.app_context():
+    setup_database_and_admin()
 
 
 # ---------------- LOGIN HELPERS ---------------- #
@@ -95,7 +141,6 @@ def redirect_by_role(user):
 @app.route("/")
 @app.route("/home")
 def home():
-    # Original homepage, separate from the dashboard
     return render_template("index.html")
 
 
@@ -233,10 +278,7 @@ def doctors():
 
     all_doctors = Doctor.query.order_by(Doctor.id.desc()).all()
 
-    return render_template(
-        "doctors.html",
-        doctors=all_doctors
-    )
+    return render_template("doctors.html", doctors=all_doctors)
 
 
 @app.route("/add-doctor", methods=["GET", "POST"])
@@ -340,10 +382,7 @@ def edit_doctor(doctor_id):
         flash("Doctor details updated successfully.", "success")
         return redirect(url_for("doctors"))
 
-    return render_template(
-        "edit_doctor.html",
-        doctor=doctor
-    )
+    return render_template("edit_doctor.html", doctor=doctor)
 
 
 @app.route("/delete-doctor/<int:doctor_id>", methods=["GET", "POST"])
@@ -376,10 +415,7 @@ def patients():
 
     all_patients = Patient.query.order_by(Patient.id.desc()).all()
 
-    return render_template(
-        "patients.html",
-        patients=all_patients
-    )
+    return render_template("patients.html", patients=all_patients)
 
 
 @app.route("/add-patient", methods=["GET", "POST"])
@@ -447,10 +483,7 @@ def edit_patient(patient_id):
         flash("Patient details updated successfully.", "success")
         return redirect(url_for("patients"))
 
-    return render_template(
-        "edit_patient.html",
-        patient=patient
-    )
+    return render_template("edit_patient.html", patient=patient)
 
 
 @app.route("/delete-patient/<int:patient_id>", methods=["GET", "POST"])
@@ -509,9 +542,7 @@ def book_appointment(doctor_id):
 
         if not appointment_date or not appointment_time:
             flash("Please select a date and time.", "danger")
-            return redirect(
-                url_for("book_appointment", doctor_id=doctor.id)
-            )
+            return redirect(url_for("book_appointment", doctor_id=doctor.id))
 
         existing = Appointment.query.filter(
             Appointment.doctor_id == doctor.id,
@@ -521,10 +552,11 @@ def book_appointment(doctor_id):
         ).first()
 
         if existing:
-            flash("This time slot is already booked. Please choose another.", "danger")
-            return redirect(
-                url_for("book_appointment", doctor_id=doctor.id)
+            flash(
+                "This time slot is already booked. Please choose another.",
+                "danger"
             )
+            return redirect(url_for("book_appointment", doctor_id=doctor.id))
 
         appointment = Appointment(
             doctor_id=doctor.id,
@@ -540,9 +572,12 @@ def book_appointment(doctor_id):
         flash("Appointment booked successfully!", "success")
         return redirect(url_for("my_appointments"))
 
+    from datetime import date
+
     return render_template(
         "book_appointment.html",
-        doctor=doctor
+        doctor=doctor,
+        today=date.today().isoformat()
     )
 
 
@@ -556,10 +591,7 @@ def appointments():
         Appointment.id.desc()
     ).all()
 
-    return render_template(
-        "appointment.html",
-        appointments=all_appointments
-    )
+    return render_template("appointment.html", appointments=all_appointments)
 
 
 # ---------------- DOCTOR DASHBOARD ---------------- #
@@ -587,7 +619,6 @@ def doctor_dashboard():
 @app.route("/doctor-appointments")
 @role_required("doctor")
 def doctor_appointments():
-
     return redirect(url_for("doctor_dashboard"))
 
 
@@ -656,15 +687,11 @@ def my_appointments(patient_id=None):
         flash("Your patient profile is not linked.", "danger")
         return redirect(url_for("patient_dashboard"))
 
-    # Patients can only view their own appointments.
     my_records = Appointment.query.filter_by(
         patient_id=user.patient_id
     ).order_by(Appointment.id.desc()).all()
 
-    return render_template(
-        "my_appointments.html",
-        appointments=my_records
-    )
+    return render_template("my_appointments.html", appointments=my_records)
 
 
 # ---------------- CANCEL APPOINTMENT ---------------- #
@@ -695,8 +722,6 @@ def cancel_appointment(appointment_id):
 @app.cli.command("create-admin")
 def create_admin():
 
-    """Create an administrator account from the terminal."""
-
     email = click.prompt("Admin email").strip().lower()
     name = click.prompt("Admin name").strip()
     password = click.prompt(
@@ -713,12 +738,7 @@ def create_admin():
         click.echo("Password must contain at least 8 characters.")
         return
 
-    admin = User(
-        name=name,
-        email=email,
-        role="admin"
-    )
-
+    admin = User(name=name, email=email, role="admin")
     admin.set_password(password)
 
     db.session.add(admin)
@@ -733,8 +753,6 @@ def create_admin():
 @click.argument("doctor_id", type=int)
 @click.argument("email")
 def link_doctor(doctor_id, email):
-
-    """Create a login account for an existing doctor."""
 
     doctor = db.session.get(Doctor, doctor_id)
 
@@ -781,7 +799,7 @@ def link_doctor(doctor_id, email):
 
 if __name__ == "__main__":
     app.run(
-        host="127.0.0.1",
-        port=5000,
-        debug=True
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 5000)),
+        debug=False
     )
